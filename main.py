@@ -1,3 +1,5 @@
+import time
+
 def main():
 
     book = read_book()    
@@ -6,10 +8,15 @@ def main():
 
     print(f"The number of words in the books is : {num_of_words_in_whole_book}")
 
-    num_of_words_for_each_character = words_in_book_per_character(book)
+    character_list = words_in_book_per_character(book)
 
-    for character in num_of_words_for_each_character:
-        print(f"{character} has {num_of_words_for_each_character[character]} words in the book")
+    character_list.sort(reverse=True, key=sort_on)
+
+    for character in character_list:
+        print(character["char"] + " appears " + str(character["num"]) + " times in the book")
+
+def sort_on(dict):
+    return dict["num"]
 
 def read_book():
     with open("books/frankenstein.txt") as book:
@@ -22,15 +29,31 @@ def words_in_book(book):
 
 
 def words_in_book_per_character(book):
-    character_wc_instances = {"frankenstein": 0,}
+    character_list = []
 
-    book_split_by_word = book.split()
+    for character in book:
 
-    for word in book_split_by_word:
-        for character in character_wc_instances:
-            if word.lower() == character.lower():
-                character_wc_instances["frankenstein"] += 1
-    return character_wc_instances
+        lowered_character = character.lower()
 
+        char_index = is_char_in_list(lowered_character, character_list)
+        
+        if(char_index >= 0):
+
+            character_list[char_index]["num"] += 1
+ 
+        else:
+
+            character_list.append({"char": lowered_character, "num": 1})    
+    
+    return character_list
+
+def is_char_in_list(char, char_list):
+        
+    for i in range(0, len(char_list)):
+    
+        if char == char_list[i]["char"]:
+
+            return i
+    return -1
 
 main()
